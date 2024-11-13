@@ -21,6 +21,9 @@ const useRecipeStore = create((set) => ({
       ),
     })),
 
+  // Action to set the recipes (this could be used for initial loading)
+  setRecipes: (newRecipes) => set({ recipes: newRecipes }),
+
   // New state for search term
   searchTerm: "",
 
