@@ -1,7 +1,8 @@
 import {create} from "zustand";
 
 const useRecipeStore = create((set) => ({
-  recipes: [], // List of all recipes
+  recipes: [], // The list of all recipes
+  favorites: [], // The list of favorite recipe IDs
 
   // Action to add a new recipe
   addRecipe: (newRecipe) =>
@@ -42,11 +43,35 @@ const useRecipeStore = create((set) => ({
       return { filteredRecipes: filtered };
     }),
 
-  // Action to get filtered recipes (use this in your components)
-  filteredRecipes: [],
-
   // Action to load recipes into the store
   loadRecipes: (newRecipes) => set({ recipes: newRecipes }),
+
+  // Add a recipe to favorites
+  addFavorite: (recipeId) =>
+    set((state) => {
+      if (!state.favorites.includes(recipeId)) {
+        return { favorites: [...state.favorites, recipeId] };
+      }
+      return state; // If already in favorites, do nothing
+    }),
+
+  // Remove a recipe from favorites
+  removeFavorite: (recipeId) =>
+    set((state) => ({
+      favorites: state.favorites.filter((id) => id !== recipeId),
+    })),
+
+  // Recommendations (mock implementation based on favorites)
+  recommendations: [],
+
+  // Action to generate recommendations based on favorites
+  generateRecommendations: () =>
+    set((state) => {
+      const recommended = state.recipes.filter(
+        (recipe) => state.favorites.includes(recipe.id) && Math.random() > 0.5 // Mock logic
+      );
+      return { recommendations: recommended };
+    }),
 }));
 
 export default useRecipeStore;
