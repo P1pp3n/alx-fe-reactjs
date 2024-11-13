@@ -1,8 +1,7 @@
-import { create } from "zustand";
+import {create} from "zustand";
 
 const useRecipeStore = create((set) => ({
-  recipes: [], // The list of all recipes
-  favorites: [], // Array to store the IDs of favorite recipes
+  recipes: [], // List of all recipes
 
   // Action to add a new recipe
   addRecipe: (newRecipe) =>
@@ -22,30 +21,31 @@ const useRecipeStore = create((set) => ({
       ),
     })),
 
-  // Action to add a recipe to favorites
-  addFavorite: (recipeId) =>
-    set((state) => ({
-      favorites: [...state.favorites, recipeId],
-    })),
+  // Action to set the recipes (useful for initial loading)
+  setRecipes: (newRecipes) => set({ recipes: newRecipes }),
 
-  // Action to remove a recipe from favorites
-  removeFavorite: (recipeId) =>
-    set((state) => ({
-      favorites: state.favorites.filter((id) => id !== recipeId),
-    })),
+  // New state for search term
+  searchTerm: "",
 
-  // Action to generate recipe recommendations based on favorites
-  recommendations: [],
-  generateRecommendations: () =>
+  // Action to set the search term
+  setSearchTerm: (term) => set({ searchTerm: term }),
+
+  // Action to filter recipes based on search term
+  filterRecipes: () =>
     set((state) => {
-      // Basic implementation of recommendations (you can improve the logic later)
-      const recommended = state.recipes.filter((recipe) =>
-        state.favorites.includes(recipe.id)
+      const searchTerm = state.searchTerm.toLowerCase();
+      const filtered = state.recipes.filter(
+        (recipe) =>
+          recipe.title.toLowerCase().includes(searchTerm) || // Filter by title
+          recipe.description.toLowerCase().includes(searchTerm) // Filter by description
       );
-      return { recommendations: recommended };
+      return { filteredRecipes: filtered };
     }),
 
-  // Action to load recipes into the store (useful for initial loading)
+  // Action to get filtered recipes (use this in your components)
+  filteredRecipes: [],
+
+  // Action to load recipes into the store
   loadRecipes: (newRecipes) => set({ recipes: newRecipes }),
 }));
 
