@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 
 const TodoList = () => {
-  // Initial state with some demo todos
   const [todos, setTodos] = useState([
     { id: 1, text: "Learn React", completed: false },
     { id: 2, text: "Write Tests", completed: false },
@@ -10,7 +9,7 @@ const TodoList = () => {
   ]);
   const [newTodo, setNewTodo] = useState("");
 
-  // Add new todo
+  // Add Todo
   const handleAddTodo = () => {
     if (newTodo.trim() !== "") {
       setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }]);
@@ -18,7 +17,7 @@ const TodoList = () => {
     }
   };
 
-  // Toggle completion
+  // Toggle Todo Completion
   const toggleCompletion = (id) => {
     setTodos(
       todos.map((todo) =>
@@ -27,7 +26,7 @@ const TodoList = () => {
     );
   };
 
-  // Delete todo
+  // Delete Todo
   const deleteTodo = (id) => {
     setTodos(todos.filter((todo) => todo.id !== id));
   };
