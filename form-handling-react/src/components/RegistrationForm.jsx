@@ -1,74 +1,88 @@
-import React from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
+import React, { useState } from "react";
 
 const RegistrationForm = () => {
-  // Yup validation schema
-  const validationSchema = Yup.object({
-    username: Yup.string()
-      .required("Username is required")
-      .min(3, "Username must be at least 3 characters"),
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    password: Yup.string()
-      .required("Password is required")
-      .min(6, "Password must be at least 6 characters"),
-  });
-
-  // Initial form values
-  const initialValues = {
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  // Submit handler
-  const onSubmit = (values) => {
-    console.log("Form Submitted Successfully:", values);
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.username) newErrors.username = "Username is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.password) newErrors.password = "Password is required";
+    return newErrors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+    } else {
+      // Simulate API call
+      console.log("User  registered:", formData);
+      // Reset form
+      setFormData({ username: "", email: "", password: "" });
+      setErrors({});
+    }
   };
 
   return (
-    <div>
-      <h2>Registration Form with Formik</h2>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={onSubmit}
-      >
-        <Form>
-          <div>
-            <label htmlFor="username">Username:</label>
-            {/* Formik's Field component to automatically bind the field's value */}
-            <Field type="text" id="username" name="username" />
-            {/* Error message */}
-            <ErrorMessage
-              name="username"
-              component="p"
-              style={{ color: "red" }}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="email">Email:</label>
-            <Field type="email" id="email" name="email" />
-            <ErrorMessage name="email" component="p" style={{ color: "red" }} />
-          </div>
-
-          <div>
-            <label htmlFor="password">Password:</label>
-            <Field type="password" id="password" name="password" />
-            <ErrorMessage
-              name="password"
-              component="p"
-              style={{ color: "red" }}
-            />
-          </div>
-
-          <button type="submit">Register</button>
-        </Form>
-      </Formik>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>
+          Username:
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+          />
+        </label>
+        {errors.username && (
+          <span style={{ color: "red" }}>{errors.username}</span>
+        )}
+      </div>
+      <div>
+        <label>
+          Email:
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+          />
+        </label>
+        {errors.email && <span style={{ color: "red" }}>{errors.email}</span>}
+      </div>
+      <div>
+        <label>
+          Password:
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </label>
+        {errors.password && (
+          <span style={{ color: "red" }}>{errors.password}</span>
+        )}
+      </div>
+      <button type="submit">Register</button>
+    </form>
   );
 };
 
