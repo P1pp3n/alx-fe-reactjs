@@ -1,10 +1,11 @@
 import React from "react";
-import RegistrationForm from "./components/FormikForm";
+import FormikForm from "./components/formikForm"; // Adjust the path as necessary
+
 const App = () => {
   return (
     <div>
-      <h1>User Registration</h1>
-      <RegistrationForm />
+      <h1>Registration Form</h1>
+      <FormikForm />
     </div>
   );
 };
