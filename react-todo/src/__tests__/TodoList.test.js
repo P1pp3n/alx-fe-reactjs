@@ -4,10 +4,13 @@ import TodoList from "./components/TodoList";
 // Test to check if the TodoList renders correctly
 test("renders TodoList component", () => {
   render(<TodoList />);
+
   // Verify component initial render
   expect(screen.getByText(/Todo List/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText("Add a new todo")).toBeInTheDocument();
   expect(screen.getByText("Add Todo")).toBeInTheDocument();
+
+  // Check for initial todos
   expect(screen.getByText("Learn React")).toBeInTheDocument();
   expect(screen.getByText("Write Tests")).toBeInTheDocument();
   expect(screen.getByText("Build Todo App")).toBeInTheDocument();
@@ -16,11 +19,13 @@ test("renders TodoList component", () => {
 // Test to check if the Add Todo button works
 test("adds a new todo", () => {
   render(<TodoList />);
+
   // Simulate typing a new todo and clicking Add Todo
   fireEvent.change(screen.getByPlaceholderText("Add a new todo"), {
     target: { value: "New Todo" },
   });
   fireEvent.click(screen.getByText("Add Todo"));
+
   // Verify that the new todo is added
   expect(screen.getByText("New Todo")).toBeInTheDocument();
 });
