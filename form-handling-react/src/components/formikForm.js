@@ -39,7 +39,9 @@ const FormikForm = () => {
         <Form>
           <div>
             <label htmlFor="username">Username:</label>
+            {/* Using Formik's Field component to bind to the internal state */}
             <Field type="text" id="username" name="username" />
+            {/* Error message using Formik's ErrorMessage component */}
             <ErrorMessage
               name="username"
               component="p"
