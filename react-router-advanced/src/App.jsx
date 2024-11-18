@@ -6,6 +6,7 @@ import Profile from "./components/Profile";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UserProfile from "./components/UserProfile";
+import BlogPost from "./components/BlogPost"; // Import BlogPost component
 import { useState } from "react";
 
 const App = () => {
@@ -34,6 +35,8 @@ const App = () => {
             }
           />
           <Route path="/user/:userId" element={<User Profile />} />
+          <Route path="/blog/:id" element={<BlogPost />} />{" "}
+          {/* BlogPost route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
