@@ -1,89 +1,73 @@
-import React, { useState } from "react";
+import React from "react";
+import { Formik, Field, Form, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
+  // Yup validation schema
+  const validationSchema = Yup.object({
+    username: Yup.string()
+      .required("Username is required")
+      .min(3, "Username must be at least 3 characters"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters"),
+  });
+
+  // Initial form values
+  const initialValues = {
     username: "",
     email: "",
     password: "",
-  });
-
-  const [errors, setErrors] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const validationErrors = {};
-    if (!formData.username) validationErrors.username = "Username is required";
-    if (!formData.email) validationErrors.email = "Email is required";
-    if (!formData.password) validationErrors.password = "Password is required";
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      console.log("Form Submitted Successfully:", formData);
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-      });
-      setErrors({});
-    }
+  // Submit handler
+  const onSubmit = (values) => {
+    console.log("Form Submitted Successfully:", values);
   };
 
   return (
     <div>
-      <h2>Registration Form</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-          {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
-        </div>
+      <h2>Registration Form with Formik</h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        <Form>
+          <div>
+            <label htmlFor="username">Username:</label>
+            {/* Formik's Field component to automatically bind the field's value */}
+            <Field type="text" id="username" name="username" />
+            {/* Error message */}
+            <ErrorMessage
+              name="username"
+              component="p"
+              style={{ color: "red" }}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
-        </div>
+          <div>
+            <label htmlFor="email">Email:</label>
+            <Field type="email" id="email" name="email" />
+            <ErrorMessage name="email" component="p" style={{ color: "red" }} />
+          </div>
 
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-        </div>
+          <div>
+            <label htmlFor="password">Password:</label>
+            <Field type="password" id="password" name="password" />
+            <ErrorMessage
+              name="password"
+              component="p"
+              style={{ color: "red" }}
+            />
+          </div>
 
-        <button type="submit">Register</button>
-      </form>
+          <button type="submit">Register</button>
+        </Form>
+      </Formik>
     </div>
   );
 };
