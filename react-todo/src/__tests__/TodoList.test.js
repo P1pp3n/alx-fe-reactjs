@@ -29,7 +29,7 @@ test("allows users to toggle a todo", () => {
 test("allows users to delete a todo", () => {
   render(<TodoList />);
   const todo = screen.getByText("Learn React");
-  const deleteButton = todo.nextSibling;
+  const deleteButton = screen.getByText("Learn React").nextSibling;
 
   fireEvent.click(deleteButton);
   expect(todo).not.toBeInTheDocument();
