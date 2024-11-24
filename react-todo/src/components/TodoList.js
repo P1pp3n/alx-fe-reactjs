@@ -1,71 +1,46 @@
-// ../components/TodoList.js
 import React, { useState } from "react";
+import AddTodoForm from "./AddTodoForm";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([
-    { text: "Learn React", completed: false },
-    { text: "Write Tests", completed: false },
+    { id: 1, text: "Learn React", completed: false },
+    { id: 2, text: "Write Tests", completed: false },
   ]);
 
   const addTodo = (text) => {
-    setTodos([...todos, { text, completed: false }]);
+    setTodos([...todos, { id: todos.length + 1, text, completed: false }]);
   };
 
-  const toggleTodo = (index) => {
-    const newTodos = todos.map((todo, i) =>
-      i === index ? { ...todo, completed: !todo.completed } : todo
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
     );
-    setTodos(newTodos);
   };
 
-  const deleteTodo = (index) => {
-    setTodos(todos.filter((_, i) => i !== index));
+  const deleteTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
     <div>
+      <h1>Todo List</h1>
+      <AddTodoForm addTodo={addTodo} />
       <ul>
-        {todos.map((todo, index) => (
-          <li
-            key={index}
-            onClick={() => toggleTodo(index)}
-            style={{
-              textDecoration: todo.completed ? "line-through" : "none",
-            }}
-          >
-            {todo.text}
-            <button
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent toggle on delete
-                deleteTodo(index);
+        {todos.map((todo) => (
+          <li key={todo.id} onClick={() => toggleTodo(todo.id)}>
+            <span
+              style={{
+                textDecoration: todo.completed ? "line-through" : "none",
               }}
             >
-              Delete
-            </button>
+              {todo.text}
+            </span>
+            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
           </li>
         ))}
       </ul>
-      <input
-        type="text"
-        placeholder="Add a new todo"
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && e.target.value.trim()) {
-            addTodo(e.target.value.trim());
-            e.target.value = "";
-          }
-        }}
-      />
-      <button
-        onClick={() => {
-          const input = document.querySelector("input");
-          if (input.value.trim()) {
-            addTodo(input.value.trim());
-            input.value = "";
-          }
-        }}
-      >
-        Add
-      </button>
     </div>
   );
 };
