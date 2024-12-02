@@ -27,7 +27,7 @@ const AddRecipeForm = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear specific error when the field is updated
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleSubmit = (e) => {
@@ -38,12 +38,12 @@ const AddRecipeForm = () => {
       return;
     }
     console.log("Form Submitted:", formData);
-    setFormData({ title: "", ingredients: "", steps: "" }); // Reset form
-    setErrors({}); // Clear errors
+    setFormData({ title: "", ingredients: "", steps: "" });
+    setErrors({});
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-lg">
+    <div className="container mx-auto p-6 max-w-lg md:max-w-2xl">
       <h1 className="text-2xl font-bold mb-4 text-center">Add a New Recipe</h1>
       <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded p-6">
         <div className="mb-4">
@@ -71,52 +71,54 @@ const AddRecipeForm = () => {
           )}
         </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="ingredients"
-            className="block text-gray-700 font-semibold mb-2"
-          >
-            Ingredients
-          </label>
-          <textarea
-            id="ingredients"
-            name="ingredients"
-            value={formData.ingredients}
-            onChange={handleChange}
-            className={`w-full border rounded px-3 py-2 h-24 focus:outline-none focus:ring-2 ${
-              errors.ingredients
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:ring-blue-500"
-            }`}
-            placeholder="List each ingredient on a new line"
-          ></textarea>
-          {errors.ingredients && (
-            <p className="text-red-500 text-sm mt-1">{errors.ingredients}</p>
-          )}
-        </div>
+        <div className="mb-4 md:flex md:space-x-4">
+          <div className="md:w-1/2">
+            <label
+              htmlFor="ingredients"
+              className="block text-gray-700 font-semibold mb-2"
+            >
+              Ingredients
+            </label>
+            <textarea
+              id="ingredients"
+              name="ingredients"
+              value={formData.ingredients}
+              onChange={handleChange}
+              className={`w-full border rounded px-3 py-2 h-24 focus:outline-none focus:ring-2 ${
+                errors.ingredients
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              }`}
+              placeholder="List each ingredient on a new line"
+            ></textarea>
+            {errors.ingredients && (
+              <p className="text-red-500 text-sm mt-1">{errors.ingredients}</p>
+            )}
+          </div>
 
-        <div className="mb-4">
-          <label
-            htmlFor="steps"
-            className="block text-gray-700 font-semibold mb-2"
-          >
-            Preparation Steps
-          </label>
-          <textarea
-            id="steps"
-            name="steps"
-            value={formData.steps}
-            onChange={handleChange}
-            className={`w-full border rounded px-3 py-2 h-24 focus:outline-none focus:ring-2 ${
-              errors.steps
-                ? "border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:ring-blue-500"
-            }`}
-            placeholder="Describe the preparation steps"
-          ></textarea>
-          {errors.steps && (
-            <p className="text-red-500 text-sm mt-1">{errors.steps}</p>
-          )}
+          <div className="md:w-1/2">
+            <label
+              htmlFor="steps"
+              className="block text-gray-700 font-semibold mb-2"
+            >
+              Preparation Steps
+            </label>
+            <textarea
+              id="steps"
+              name="steps"
+              value={formData.steps}
+              onChange={handleChange}
+              className={`w-full border rounded px-3 py-2 h-24 focus:outline-none focus:ring-2 ${
+                errors.steps
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              }`}
+              placeholder="Describe the preparation steps"
+            ></textarea>
+            {errors.steps && (
+              <p className="text-red-500 text-sm mt-1">{errors.steps}</p>
+            )}
+          </div>
         </div>
 
         <button
