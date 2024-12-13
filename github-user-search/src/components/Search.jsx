@@ -1,38 +1,46 @@
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService'; // Import the API function
+import { fetchUserData } from '../services/githubService'; 
 
-const UserSearch = () => {
-  const [username, setUsername] = useState(''); // State to hold the username input
+const Search = () => {
+  const [username, setUsername] = useState('');  // State for the search input
   const [userData, setUserData] = useState(null); // State to store fetched user data
-  const [error, setError] = useState(null); // State to handle errors
+  const [error, setError] = useState(null);  // State to handle errors
+  const [loading, setLoading] = useState(false); // State for loading indicator
 
-  // Handle input change
+  // Handle input changes for the search field
   const handleInputChange = (event) => {
     setUsername(event.target.value);
   };
 
-  // Handle form submission to fetch user data
+  // Handle form submission (trigger search)
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault(); // Prevent default form submission
 
-    setError(null); // Clear previous errors
-    setUserData(null); // Reset previous user data
+    setError(null);  // Reset error state
+    setUserData(null);  // Clear previous user data
+    setLoading(true);  // Set loading to true while making the API call
 
     if (username.trim() !== '') {
       try {
-        // Fetch user data from the GitHub API
-        const data = await fetchUserData(username);
-        setUserData(data); // Set the fetched data to the state
+        const data = await fetchUserData(username);  // Fetch user data from the service
+        setUserData(data);  // Set the user data to state
       } catch (error) {
-        setError('User not found or an error occurred'); // Set error state
+        setError('Looks like we can’t find the user');  // Handle error state
+      } finally {
+        setLoading(false);  // Stop loading once the request is complete
       }
+    } else {
+      setError('Please enter a username');  // Handle case where no username is entered
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold">GitHub User Search</h2>
-      <form onSubmit={handleSubmit}>
+
+      {/* Search Form */}
+      <form onSubmit={handleSubmit} className="mb-4">
         <input
           type="text"
           value={username}
@@ -40,19 +48,26 @@ const UserSearch = () => {
           placeholder="Enter GitHub username"
           className="border p-2 rounded w-full mb-4"
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Search
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">
+          {loading ? 'Loading...' : 'Search'}
         </button>
       </form>
 
-      {/* Display the error if any */}
-      {error && <div className="text-red-500 mt-2">{error}</div>}
+      {/* Conditional Rendering Based on API Call Status */}
+      {loading && (
+        <div className="text-blue-500">Loading...</div>
+      )}
 
-      {/* Display user data if available */}
-      {userData && (
+      {error && !loading && (
+        <div className="text-red-500">{error}</div>
+      )}
+
+      {userData && !loading && (
         <div className="mt-4">
-          <h3 className="font-semibold text-lg">{userData.name}</h3>
-          <p>{userData.bio}</p>
+          <h3 className="font-semibold text-lg">{userData.name || 'No name provided'}</h3>
+          <p>{userData.bio || 'No bio available'}</p>
+          <p><strong>Location:</strong> {userData.location || 'Not available'}</p>
+          <p><strong>Public Repositories:</strong> {userData.public_repos}</p>
           <img src={userData.avatar_url} alt="User Avatar" className="mt-2 w-24 h-24 rounded-full" />
           <div>
             <a
@@ -70,4 +85,4 @@ const UserSearch = () => {
   );
 };
 
-export default UserSearch;
+export default Search;

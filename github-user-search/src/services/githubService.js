@@ -1,19 +1,16 @@
-// src/services/githubApi.js
+// src/services/githubService.js
 import axios from 'axios';
 
+// Define the GitHub API endpoint for user search
 const GITHUB_API_URL = 'https://api.github.com/users/';
 
-// Fetch GitHub user data by username
+// Function to fetch user data by username
 export const fetchUserData = async (username) => {
   try {
-    const response = await axios.get(`${GITHUB_API_URL}${username}`, {
-      headers: {
-        Authorization: `token ${import.meta.env.VITE_GITHUB_API_KEY}`, // Use VITE_ prefix for Vite's environment variables
-      },
-    });
-    return response.data;
+    const response = await axios.get(`${GITHUB_API_URL}${username}`);
+    return response.data;  // Return the user data from the API response
   } catch (error) {
     console.error('Error fetching user data:', error);
-    throw error;
+    throw error;  // Throw error to be handled by the calling component
   }
 };
