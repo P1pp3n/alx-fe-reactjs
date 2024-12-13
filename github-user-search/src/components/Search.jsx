@@ -1,38 +1,43 @@
 // src/components/Search.jsx
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService'; // Make sure the path is correct
+import { fetchUserData } from '../services/githubService'; // Ensure correct import for fetching data
 
 const Search = () => {
-  const [username, setUsername] = useState('');  // State for the search input
-  const [userData, setUserData] = useState(null); // State to store fetched user data
-  const [error, setError] = useState(null);  // State to handle errors
-  const [loading, setLoading] = useState(false); // State for loading indicator
+  const [username, setUsername] = useState('');
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState(0); // State for minimum repository count
+  const [userData, setUserData] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Handle input changes for the search field
   const handleInputChange = (event) => {
-    setUsername(event.target.value);
+    const { name, value } = event.target;
+    if (name === 'username') setUsername(value);
+    if (name === 'location') setLocation(value);
+    if (name === 'minRepos') setMinRepos(value);
   };
 
-  // Handle form submission (trigger search)
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission
-
-    // Reset previous error or data
+    event.preventDefault();
     setError(null);
-    setUserData(null);
-    setLoading(true); // Start loading while fetching data
+    setUserData([]);
+    setLoading(true);
 
-    if (username.trim() !== '') {
-      try {
-        const data = await fetchUserData(username);  // Fetch user data from the API
-        setUserData(data);  // Update the state with user data
-      } catch (error) {
-        setError("Looks like we cant find the user");  // Handle API errors (user not found, etc.)
-      } finally {
-        setLoading(false);  // Stop loading once the request is complete
-      }
-    } else {
-      setError('Please enter a username');  // Error if no username is entered
+    // Building the query string based on user input
+    let query = `${username ? `+${username}` : ''}${location ? `+location:${location}` : ''}${minRepos ? `+repos:>${minRepos}` : ''}`;
+
+    if (query.trim() === '') {
+      setError('Please provide at least one search criteria!');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const data = await fetchUserData(query); // Pass query string to the service
+      setUserData(data.items || []); // Assuming the GitHub API response contains `items`
+    } catch (error) {
+      setError('Looks like we can’t find any users with those criteria');
+    } finally {
       setLoading(false);
     }
   };
@@ -41,55 +46,75 @@ const Search = () => {
     <div className="p-4">
       <h2 className="text-xl font-semibold">GitHub User Search</h2>
 
-      {/* Search Form */}
-      <form onSubmit={handleSubmit} className="mb-4">
-        <input
-          type="text"
-          value={username}
-          onChange={handleInputChange}
-          placeholder="Enter GitHub username"
-          className="border p-2 rounded w-full mb-4"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 rounded w-full"
-        >
+      {/* Search Form with Advanced Criteria */}
+      <form onSubmit={handleSubmit} className="mb-4 space-y-4">
+        <div>
+          <input
+            type="text"
+            name="username"
+            value={username}
+            onChange={handleInputChange}
+            placeholder="Enter GitHub username"
+            className="border p-2 rounded w-full mb-4"
+          />
+        </div>
+        <div>
+          <input
+            type="text"
+            name="location"
+            value={location}
+            onChange={handleInputChange}
+            placeholder="Enter location"
+            className="border p-2 rounded w-full mb-4"
+          />
+        </div>
+        <div>
+          <input
+            type="number"
+            name="minRepos"
+            value={minRepos}
+            onChange={handleInputChange}
+            placeholder="Minimum Repositories"
+            className="border p-2 rounded w-full mb-4"
+            min="0"
+          />
+        </div>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">
           {loading ? 'Loading...' : 'Search'}
         </button>
       </form>
 
       {/* Conditional Rendering Based on API Call Status */}
-      {loading && (
-        <div className="text-blue-500">Loading...</div>
-      )}
+      {loading && <div className="text-blue-500">Loading...</div>}
+      {error && !loading && <div className="text-red-500">{error}</div>}
 
-      {error && !loading && (
-        <div className="text-red-500">{error}</div> 
-      )}
-
-      {userData && !loading && (
-        <div className="mt-4">
-          {/* Display user data */}
-          <h3 className="font-semibold text-lg">{userData.login}</h3> {/* Display login (GitHub username) */}
-          <p>{userData.name || 'No name available'}</p> {/* Display name */}
-          <p>{userData.bio || 'No bio available'}</p> {/* Display bio */}
-          <p><strong>Location:</strong> {userData.location || 'Not available'}</p> {/* Display location */}
-          <p><strong>Public Repositories:</strong> {userData.public_repos}</p> {/* Display repo count */}
-          <img
-            src={userData.avatar_url}
-            alt="User Avatar"
-            className="mt-2 w-24 h-24 rounded-full"
-          /> {/* Display avatar */}
-          <div>
-            <a
-              href={userData.html_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500"
-            >
-              View Profile
-            </a> {/* Link to GitHub profile */}
-          </div>
+      {/* Displaying User Results */}
+      {userData.length > 0 && !loading && (
+        <div>
+          {userData.map((user) => (
+            <div key={user.id} className="mt-4 border p-4 rounded">
+              <h3 className="font-semibold text-lg">{user.login}</h3>
+              <p>{user.name || 'No name available'}</p>
+              <p>{user.bio || 'No bio available'}</p>
+              <p><strong>Location:</strong> {user.location || 'Not available'}</p>
+              <p><strong>Public Repositories:</strong> {user.public_repos}</p>
+              <img
+                src={user.avatar_url}
+                alt="User Avatar"
+                className="mt-2 w-24 h-24 rounded-full"
+              />
+              <div>
+                <a
+                  href={user.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500"
+                >
+                  View Profile
+                </a>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

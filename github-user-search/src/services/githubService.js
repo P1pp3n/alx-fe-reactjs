@@ -1,16 +1,13 @@
 // src/services/githubService.js
 import axios from 'axios';
 
-// Define the GitHub API endpoint for user search
-const GITHUB_API_URL = 'https://api.github.com/users/';
-
-// Function to fetch user data by username
-export const fetchUserData = async (username) => {
+// Fetch user data with advanced search
+export const fetchUserData = async (query) => {
+  const url = `https://api.github.com/search/users?q=${query}&per_page=10`; // Limit results to 10 per page
   try {
-    const response = await axios.get(`${GITHUB_API_URL}${username}`);
-    return response.data;  // Return the user data from the API response
+    const response = await axios.get(url);
+    return response.data;  // Return the whole data (items will contain the users)
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    throw error;  // Throw error to be handled by the calling component
+    throw new Error('Error fetching data from GitHub API');
   }
 };
