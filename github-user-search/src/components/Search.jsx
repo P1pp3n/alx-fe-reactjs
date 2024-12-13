@@ -1,4 +1,4 @@
-// src/components/Search.jsx
+
 import React, { useState } from 'react';
 import { fetchUserData } from '../services/githubService'; // Ensure correct import for fetching data
 
@@ -23,17 +23,9 @@ const Search = () => {
     setUserData([]);
     setLoading(true);
 
-    // Building the query string based on user input
-    let query = `${username ? `+${username}` : ''}${location ? `+location:${location}` : ''}${minRepos ? `+repos:>${minRepos}` : ''}`;
-
-    if (query.trim() === '') {
-      setError('Please provide at least one search criteria!');
-      setLoading(false);
-      return;
-    }
-
+    // Call fetchUserData with the username, location, and minRepos parameters
     try {
-      const data = await fetchUserData(query); // Pass query string to the service
+      const data = await fetchUserData(username, location, minRepos); // Pass the parameters
       setUserData(data.items || []); // Assuming the GitHub API response contains `items`
     } catch (error) {
       setError('Looks like we can’t find any users with those criteria');
