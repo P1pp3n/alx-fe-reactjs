@@ -3,34 +3,57 @@ import React, { useState } from 'react';
 import { fetchUserData } from '../services/githubService'; // Ensure correct import for fetching data
 
 const Search = () => {
-  const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('');
-  const [minRepos, setMinRepos] = useState(0); // State for minimum repository count
-  const [userData, setUserData] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');  // State for the GitHub username
+  const [location, setLocation] = useState('');  // State for the location
+  const [minRepos, setMinRepos] = useState(0);  // State for the minimum repositories count
+  const [userData, setUserData] = useState([]);  // State for storing the user data results
+  const [error, setError] = useState(null);  // State for handling errors
+  const [loading, setLoading] = useState(false);  // State for tracking loading status
 
+  // Handle input change for all fields
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } = event.target;  // Destructure the name and value from the event's target element
+
+    // Update corresponding state based on the input field name
     if (name === 'username') setUsername(value);
     if (name === 'location') setLocation(value);
     if (name === 'minRepos') setMinRepos(value);
   };
 
+  // Handle form submission
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault();  // Prevent page refresh on form submission
+
+    // Clear previous errors and user data
     setError(null);
     setUserData([]);
-    setLoading(true);
+    setLoading(true);  // Set loading to true while the API request is being processed
 
-    // Call fetchUserData with the username, location, and minRepos parameters
+    // Construct the query string dynamically
+    let query = `${username ? username : ''}`;
+
+    if (location) {
+      query += `+location:${location}`;  // Add location filter if it's provided
+    }
+
+    if (minRepos) {
+      query += `+repos:>${minRepos}`;  // Add minimum repos filter if it's provided
+    }
+
+    if (!query.trim()) {
+      setError('Please provide at least one search criteria!');
+      setLoading(false);  // Turn off loading indicator if no criteria is provided
+      return;
+    }
+
     try {
-      const data = await fetchUserData(username, location, minRepos); // Pass the parameters
-      setUserData(data.items || []); // Assuming the GitHub API response contains `items`
+      // Make the API call using the constructed query
+      const data = await fetchUserData(username, location, minRepos);
+      setUserData(data.items || []);  // Set user data in state, assuming the API returns 'items'
     } catch (error) {
-      setError('Looks like we can’t find any users with those criteria');
+      setError("Looks like we cant find the user");
     } finally {
-      setLoading(false);
+      setLoading(false);  // Turn off loading indicator
     }
   };
 
@@ -43,9 +66,9 @@ const Search = () => {
         <div>
           <input
             type="text"
-            name="username"
+            name="username"  // Ensure the name attribute corresponds to the state variable
             value={username}
-            onChange={handleInputChange}
+            onChange={handleInputChange}  // Capture user input value using event.target.value
             placeholder="Enter GitHub username"
             className="border p-2 rounded w-full mb-4"
           />
@@ -53,9 +76,9 @@ const Search = () => {
         <div>
           <input
             type="text"
-            name="location"
+            name="location"  // Ensure the name attribute corresponds to the state variable
             value={location}
-            onChange={handleInputChange}
+            onChange={handleInputChange}  // Capture user input value using event.target.value
             placeholder="Enter location"
             className="border p-2 rounded w-full mb-4"
           />
@@ -63,9 +86,9 @@ const Search = () => {
         <div>
           <input
             type="number"
-            name="minRepos"
+            name="minRepos"  // Ensure the name attribute corresponds to the state variable
             value={minRepos}
-            onChange={handleInputChange}
+            onChange={handleInputChange}  // Capture user input value using event.target.value
             placeholder="Minimum Repositories"
             className="border p-2 rounded w-full mb-4"
             min="0"
