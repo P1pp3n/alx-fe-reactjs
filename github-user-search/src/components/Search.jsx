@@ -1,5 +1,6 @@
+// src/components/Search.jsx
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubService'; 
+import { fetchUserData } from '../services/githubService'; // Make sure the path is correct
 
 const Search = () => {
   const [username, setUsername] = useState('');  // State for the search input
@@ -16,21 +17,22 @@ const Search = () => {
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
 
-    setError(null);  // Reset error state
-    setUserData(null);  // Clear previous user data
-    setLoading(true);  // Set loading to true while making the API call
+    // Reset previous error or data
+    setError(null);
+    setUserData(null);
+    setLoading(true); // Start loading while fetching data
 
     if (username.trim() !== '') {
       try {
-        const data = await fetchUserData(username);  // Fetch user data from the service
-        setUserData(data);  // Set the user data to state
+        const data = await fetchUserData(username);  // Fetch user data from the API
+        setUserData(data);  // Update the state with user data
       } catch (error) {
-        setError('Looks like we can’t find the user');  // Handle error state
+        setError("Looks like we can’t find the user");  // Handle API errors (user not found, etc.)
       } finally {
         setLoading(false);  // Stop loading once the request is complete
       }
     } else {
-      setError('Please enter a username');  // Handle case where no username is entered
+      setError('Please enter a username');  // Error if no username is entered
       setLoading(false);
     }
   };
@@ -48,7 +50,10 @@ const Search = () => {
           placeholder="Enter GitHub username"
           className="border p-2 rounded w-full mb-4"
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-2 rounded w-full"
+        >
           {loading ? 'Loading...' : 'Search'}
         </button>
       </form>
@@ -59,16 +64,22 @@ const Search = () => {
       )}
 
       {error && !loading && (
-        <div className="text-red-500">{error}</div>
+        <div className="text-red-500">{error}</div> 
       )}
 
       {userData && !loading && (
         <div className="mt-4">
-          <h3 className="font-semibold text-lg">{userData.name || 'No name provided'}</h3>
-          <p>{userData.bio || 'No bio available'}</p>
-          <p><strong>Location:</strong> {userData.location || 'Not available'}</p>
-          <p><strong>Public Repositories:</strong> {userData.public_repos}</p>
-          <img src={userData.avatar_url} alt="User Avatar" className="mt-2 w-24 h-24 rounded-full" />
+          {/* Display user data */}
+          <h3 className="font-semibold text-lg">{userData.login}</h3> {/* Display login (GitHub username) */}
+          <p>{userData.name || 'No name available'}</p> {/* Display name */}
+          <p>{userData.bio || 'No bio available'}</p> {/* Display bio */}
+          <p><strong>Location:</strong> {userData.location || 'Not available'}</p> {/* Display location */}
+          <p><strong>Public Repositories:</strong> {userData.public_repos}</p> {/* Display repo count */}
+          <img
+            src={userData.avatar_url}
+            alt="User Avatar"
+            className="mt-2 w-24 h-24 rounded-full"
+          /> {/* Display avatar */}
           <div>
             <a
               href={userData.html_url}
@@ -77,7 +88,7 @@ const Search = () => {
               className="text-blue-500"
             >
               View Profile
-            </a>
+            </a> {/* Link to GitHub profile */}
           </div>
         </div>
       )}
