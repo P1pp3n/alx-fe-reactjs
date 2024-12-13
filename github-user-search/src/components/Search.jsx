@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fetchUserData } from '../services/githubApi'; // Import the API function
+import { fetchUserData } from '../services/githubService'; // Import the API function
 
 const UserSearch = () => {
   const [username, setUsername] = useState(''); // State to hold the username input

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';  
-import UserSearch from './components/UserSearch';  
+import UserSearch from './components/Search';  
 
 function App() {
   return (
